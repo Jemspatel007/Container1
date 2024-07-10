@@ -8,6 +8,8 @@ app.use(express.json());
 app.use('/', routes);
 dotenv.config();
 
+console.log("CI Testing");
+
 app.listen(6000, () => {
     console.log(`Listening on port ${6000}...!`);
 });
