@@ -2,45 +2,26 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
+  # Docker Build
+  - id: Build
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
     args: [
-      '-c',
-      'gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS && \
-       gcloud config set project $PROJECT_ID && \
-       gcloud config set compute/zone us-central1-c && \
-       gcloud auth configure-docker us-central1-docker.pkg.dev/$PROJECT_ID/k8-jems'
+      "-c",
+      "echo 'Step 2: Building Docker image...'; \
+      us-central1-docker.pkg.dev/cloud-428821/k8-jems; \
+      docker build -t us-central1-docker.pkg.dev/${PROJECT_ID}/k8-jems/k8s-container1:${SHORT_SHA} \
+                   -t us-central1-docker.pkg.dev/${PROJECT_ID}/k8-jems/k8s-container1:latest .; \
+      echo 'Docker image built successfully.'"
     ]
 
-  - name: 'docker:dind'
-    entrypoint: 'bash'
+  # Docker Push
+  - id: Push
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
     args: [
-      '-c',
-      'cd Container1 && \
-       docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/k8-jems/k8s-container1:latest . && \
-       docker push us-central1-docker.pkg.dev/$PROJECT_ID/k8-jems/k8s-container1:latest && \
-       cd .. && \
-       cd Container2 && \
-       docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/k8-jems/k8s-container2:latest . && \
-       docker push us-central1-docker.pkg.dev/$PROJECT_ID/k8-jems/k8s-container2:latest && \
-       cd ..'
+      "-c",
+      "echo 'Step 3: Pushing Docker image...'; \
+      docker push --all-tags us-central1-docker.pkg.dev/${PROJECT_ID}/k8-jems/k8s-container1; \
+      echo 'Image pushed successfully.'"
     ]
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args: [
-      '-c',
-      'gcloud container clusters get-credentials k8s-assignment && \
-       cd deployment && \
-       kubectl apply -f deployment.yml && \
-       cd ..'
-    ]
-
-substitutions:
-  _GCP_PROJECT: 'cloud-428816'
-  _GKE_CLUSTER: 'k8s-assignment'
-  _GKE_ZONE: 'us-central1-c'
-  _KUBERNETES_NAMESPACE: 'default'
-  _ARTIFACT_REGISTRY: 'us-central1-docker.pkg.dev/cloud-428816/k8-jems'
-
-timeout: '1200s'
