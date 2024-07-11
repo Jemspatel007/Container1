@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: con1-deployment
+  labels:
+    app: k8s-container1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-container1
+  template:
+    metadata:
+      labels:
+        app: k8s-container1
+    spec:
+      containers:
+        - name: k8s-container1
+          image: jems007patel/container1
+          ports:
+            - containerPort: 6000
+          env:
+            - name: PORT
+              value: "6000"
+            - name: FILE_DIRECTORY
+              value: "/jems_PV_dir"
+            - name: CONTAINER_2_ENDPOINT
+              value: "http://container2-service:6000/parser"
+          volumeMounts:
+            - mountPath: /jems_PV_dir
+              name: persistent-volume
+      volumes:
+        - name: persistent-volume
+          persistentVolumeClaim:
+            claimName: k8s-assignment-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: container1-service
+spec:
+  selector:
+    app: k8s-container1
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 6000
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k8s-assignment-pv-claim
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
