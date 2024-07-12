@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 
-const container2_endpoint = process.env.container2_endpoint || "http://localhost:6000/parser";
-const FILE_DIRECTORY = process.env.directory || "../";
+const container2_endpoint = process.env.container2_endpoint || "http://container2-service:6000/parser";
+const FILE_DIRECTORY = process.env.FILE_DIRECTORY || "../";
 
 console.log({container2_endpoint})
 

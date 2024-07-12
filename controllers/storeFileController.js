@@ -1,11 +1,12 @@
 const path = require('path');
 const fs = require('fs');
 
-const FILE_DIRECTORY = process.env.directory || "../";
+const FILE_DIRECTORY = process.env.FILE_DIRECTORY || "../";
 
 const storeFile = (req, res) => {
     console.log({FILE_DIRECTORY})
     const { file, data } = req.body;
+    let newdata = data?.replaceAll(" ", "")||data;
 
     if (!file) {
         return res.status(400).send({
@@ -16,7 +17,7 @@ const storeFile = (req, res) => {
 
     const pathToCreateFile = path.join(FILE_DIRECTORY, file);
 
-    fs.writeFile(pathToCreateFile, data, 'utf-8', (error) => {
+    fs.writeFile(pathToCreateFile, newdata, 'utf-8', (error) => {
         if (error) {
             return res.status(500).send({
                 file,
