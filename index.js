@@ -9,6 +9,7 @@ app.use('/', routes);
 dotenv.config();
 
 console.log("CICD Testing...");
+console.log("k8s testing");
 
 app.listen(6000, () => {
     console.log(`Listening on port ${6000}...!`);
