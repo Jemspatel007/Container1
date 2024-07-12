@@ -8,8 +8,7 @@ app.use(express.json());
 app.use('/', routes);
 dotenv.config();
 
-console.log("CICD Testing...");
-console.log("k8s testing");
+console.log("CICD Testing...")
 console.log("Testing");
 
 app.listen(6000, () => {
