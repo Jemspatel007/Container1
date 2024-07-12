@@ -8,7 +8,7 @@ app.use(express.json());
 app.use('/', routes);
 dotenv.config();
 
-console.log("CICD Testing....");
+console.log("CICD Testing...");
 
 app.listen(6000, () => {
     console.log(`Listening on port ${6000}...!`);
